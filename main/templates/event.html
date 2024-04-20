@@ -1,0 +1,117 @@
+{% extends 'layout.html' %}
+{% block title %}
+{{event.title}}
+{% endblock %}
+
+{% block body %}
+<input type="hidden" id="eventuserid" value={{event.user.username}}>
+<input type="hidden" id="userid" value={{request.user.username}}>
+<div class="event-details-div">
+    <h1 style="margin-left: 10%;">{{event.title}}</h1>
+    <p class="event-decription" style="margin-left: 10%;">{{event.description}}</p>
+    <div class="event-label"><b>address:</b></div><span>{{event.address}}</span><br>
+    <div class="event-label"><b>date:</b></div><span>{{event.start_at}}</span><br>
+    <div class="event-label"><b>capacity:</b></div><span>{{capacity}}</span><br>
+    <div class="event-label"><b>tickets available:</b></div><span>{{tickets_available}}</span><br>
+    <div class="event-label"><b>tickets sold:</b></div><span>{{tickets_sold}}</span>
+
+    
+    <div id="tickets-sold" style="margin-left: 10%; margin-right: 10%; background-color: rgb(33,33,33);margin-top: 20px; width: auto; height: 50px;padding-left: 10px;padding-right: 10px; padding-top: 15px;">
+        <div style="width:100%; margin: 0px; height: 60%; border: 1px solid rgb(189, 189, 189);">
+            <div id="progress" style=" background-color: rgb(189, 189, 189); width: {{percentage}}%; margin: 0px; height: 100%;">
+            
+            </div>
+        </div>
+    </div>
+    <center><span style="color: rgb(189, 189, 189); margin-top: 20px;" id="tickets-sold">{{tickets_sold}}/{{capacity}}</span></center>
+    <div id="zab">
+    {% for ticket in event.tickets.all %}
+    <div class="ticket">
+        <b class="ticket-title">{{ticket.type}}</b>
+        <span class="ticket-info">
+            <span class="ticket-label">price :</span><span class="ticket-value">{{ticket.price}}</span>
+        </span><br>
+        {% if user.is_authenticated %}
+        <button class="buy-btn" onclick="buy_ticket({{ticket.id}},this)">buy</button>
+        {% endif %}
+    </div>
+    {% endfor %}
+    </div>
+</div>
+<script type="text/babel">
+    function buy_ticket(ticket_id,e){
+        fetch('/api/booking/', {
+            method: 'POST',
+            body: JSON.stringify({
+                id : ticket_id 
+                })
+            })
+            .then(response => response.json())
+            .then(data =>{
+                e.innerHTML = `bought`
+                setTimeout(location.reload(), 5000);
+            })            
+            
+    }
+    function Add_Ticket(){
+        var [clicked,set_clicked]  =  React.useState(false);
+        const createticket = ()=>{
+            set_clicked(true);
+        }
+        const cancelticket = ()=>{
+            set_clicked(false);
+        }
+        function AddBtn(){
+            var eui = document.getElementById("eventuserid").value;
+            var ui = document.getElementById("userid").value;
+
+            return(
+                (eui==ui) ? <center><button id="add-ticket-btn" onClick={createticket}>+</button></center> :<></>
+            )
+        }
+        function TicketForm(){
+            const [title,settitle] = React.useState("");
+            const [price,setprice] = React.useState();
+            const [number,setnumber] = React.useState();
+            function changeTitle(event){
+            settitle(event.target.value);
+            }
+            function changeprice(event){
+                setprice(event.target.value);
+            }
+            function changenumber(event){
+                setnumber(event.target.value);
+            }
+            const submitticket = ()=>{
+            fetch('/api/create_ticket/', {
+            method: 'POST',
+            body: JSON.stringify({
+                title: title,
+                price: price,
+                number: number,
+                event : {{event.id}}
+                })
+            })
+            set_clicked(false);
+            location.reload();
+        }
+            return(
+            <div id="add-ticket-from">
+                <button className="x-btn" onClick={cancelticket}>✖</button>
+                <center><h2>Add Ticket</h2></center>
+                <input type="text" id="titlein" name="type" placeholder="title" value={title} onChange={changeTitle} />
+                <input type="number" name="price" placeholder="price" value={price} onChange={changeprice}/>
+                <input type="number" name="tickets" placeholder="number" value={number}  onChange={changenumber}/>
+                <button id="add-ticket-btn1" onClick={submitticket}>Add Ticket</button>
+            </div>
+            )
+        }
+        return(
+            (clicked) ? <TicketForm/> : <AddBtn/>
+        )
+    }
+    const container = document.getElementById('app');
+    const root = ReactDOM.createRoot(container); 
+    root.render(<Add_Ticket/>);
+</script>
+{% endblock %}

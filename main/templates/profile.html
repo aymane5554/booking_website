@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+{% block title %}
+profile
+{% endblock %}
+{% block body %}
+<script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+<h1 id="profile-header">{{user.username}} <span id="stars" style="color: orange;"></span></h1>
+<div id="profile-container">
+    <div id="user-event-div">
+    <h2 style="display: inline-block;">Events {% if request.user.username == user.username %}<a href="/new_event/" style="text-decoration: none;">➕</a>{% endif %}</h2>
+    {% for e in events %}
+        <li>
+            <b class="ticket-title">
+                <a href="/event/{{e.id}}" style="color: rgb(189, 189, 189);">
+                    {{e.title}}
+                </a>
+            </b>
+        </li>
+    {% endfor %}
+    </div>
+    <div id="user-ticket-div">
+        <h2>Tickets</h2>
+        {% for t in bookings %}
+            <div class="ticket">
+                <b class="ticket-title">{{t.ticket.event.title}} #{{t.id}}</b>
+                <span class="ticket-info">
+                    <span class="ticket-label">type :</span><span class="ticket-value">{{t.ticket.type}}</span>
+                </span>
+                <span class="ticket-info">
+                    <span class="ticket-label">price :</span><span class="ticket-value">{{t.ticket.price}}</span>
+                </span>
+                <span class="ticket-info">
+                    <span class="ticket-label">time :</span><span class="ticket-value">{{t.ticket.event.start_at}}</span> 
+                </span> 
+                {% if request.user.id == t.user.id %}
+                <div style="cursor: pointer;margin-top: 10px;" id="qr{{t.id}}"  onclick="show_qr({{t.id}},'{{t.password}}')">
+                    <b style="text-decoration: underline;">show Qrcode</b>
+                </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<script>
+    document.querySelector("#user-event-div").style.width = document.querySelector("#user-ticket-div").style.width
+    let stars = "★".repeat({{rate}});
+    document.getElementById("stars").innerHTML = stars;
+    function show_qr(id,pwd){
+        document.getElementById(`qr${id}`).innerHTML = "";
+        const qrcode = new QRCode(document.getElementById(`qr${id}`), {
+        text: `http://127.0.0.1:8000/check?i=${id}&p=${pwd}`,
+        width: 200,
+        height: 200,
+        colorDark : '#000',
+        colorLight : '#fff',
+        correctLevel : QRCode.CorrectLevel.H
+        });
+        
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+{% block title %}
+home
+{% endblock %}
+{% block body %}
+<center>
+<form action="/result" method="get">
+<div id="search-div"><input type="text" name="s" id="search-bar" placeholder="search"><input type="submit" value="🔍" id="search-emoji"></div>
+</form>
+</center>
+<center><button class="search-btn" id="se" onclick="show_events(this)"  style="background-color: rgb(24, 24, 24);">Events</button>
+    <button class="search-btn" id="su" onclick="show_users(this)">Users</button></center>
+<div id="events-container">  
+{% for event in  events %}
+    <div class="event">
+        <b class="ticket-title"><a href="/Profile/{{event.user.username}}" style="color: rgb(189, 189, 189);">{{event.user.username}}</a></b>        
+        <span class="ticket-info">
+            <span class="ticket-label">title :</span><span class="ticket-value"><a href="/event/{{event.id}}" style="color: rgb(189, 189, 189);">{{event.title}}</a></span>
+        </span>
+        <span class="ticket-info">
+        <span class="ticket-label">address :</span><span class="ticket-value">{{event.address}}</span>
+        </span>
+        <span class="ticket-info">
+            <span class="ticket-label">date :</span><span class="ticket-value">{{event.start_at}}</span>
+        </span>     
+    </div>
+{% endfor %}
+</div>
+
+<div id="users-result" style="display: none; margin-left: 10%;margin-right: 10%;margin-top: 20px;">
+{% for u in users %}
+<a href="/Profile/{{u.username}}" style="text-decoration: none;border: 1px solid rgb(148, 148, 148); text-align: center;"><h2 style="color: rgb(189, 189, 189);">{{u.username}}</h2></a>
+{% endfor %}
+</div>
+<script>
+function show_events(e){
+    document.getElementById("events-container").style.display = "grid";
+    document.getElementById("users-result").style.display = "none";
+    e.style.backgroundColor = "rgb(24, 24, 24)";
+    document.getElementById("su").style.backgroundColor = "rgb(46,46,46)";
+}
+function show_users(e){
+    document.getElementById("events-container").style.display = "none";
+    document.getElementById("users-result").style.display = "grid";
+    document.getElementById("users-result").style.gridTemplateColumns = "auto auto auto";
+    document.getElementById("users-result").style.columnGap = "10px";
+    document.getElementById("users-result").style.rowGap = "10px";
+    e.style.backgroundColor = "rgb(24, 24, 24)";
+    document.getElementById("se").style.backgroundColor = "rgb(46,46,46)";
+}
+</script>
+{% endblock %}

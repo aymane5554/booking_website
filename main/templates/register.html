@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+{% block title %}
+signup
+{% endblock %}
+{% block body %}
+<script type="text/babel">
+    function Register_form(){
+    return (
+        <div className="register-div">
+            <center><h1>Register</h1></center>
+            <form className="register-form" method="post">
+            <input type="text" placeholder="username" name="username"/>
+            <input type="text" placeholder="email" name="email"/>
+            <input type="password" placeholder="password" name="password1"/>
+            <input type="password" placeholder="confirm password" name="password2"/>
+            <input type="submit" value={"register"} name="s"/>
+            </form>
+        </div>
+        )
+    }
+    ReactDOM.render(<Register_form/>,document.querySelector("#app"));
+</script>
+{% endblock %}

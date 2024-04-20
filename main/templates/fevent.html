@@ -1,0 +1,101 @@
+{% extends 'layout.html' %}
+{% block title %}
+{{event.title}}
+{% endblock %}
+
+{% block body %}
+<input type="hidden" id="eventuserid" value={{event.user.username}}>
+<input type="hidden" id="userid" value={{request.user.username}}>
+<div class="event-details-div">
+    <h1 style="margin-left: 10%;display:inline-block;">{{event.title}}</h1>
+    <p class="event-decription" style="margin-left: 10%;">{{event.description}}</p>
+    <div class="event-label"><b>rate</b></div><span>{{event_rate}}⭐</span><br>
+    <div class="event-label"><b>reviews</b></div><span>{{number_of_rates}}</span><br>
+    <div class="event-label"><b>address:</b></div><span>{{event.address}}</span><br>
+    <div class="event-label"><b>date:</b></div><span>{{event.start_at}}</span><br>
+    <div class="event-label"><b>capacity:</b></div><span>{{capacity}}</span><br>  
+    <div class="event-label"><b>tickets sold:</b></div><span>{{tickets_sold}}</span>
+    
+    <div id="tickets-sold" style="margin-left: 10%; margin-right: 10%; background-color: rgb(33,33,33);margin-top: 20px; width: auto; height: 50px;padding-left: 10px;padding-right: 10px; padding-top: 15px;">
+        <div style="width:100%; margin: 0px; height: 60%; border: 1px solid rgb(189, 189, 189);">
+            <div id="progress" style=" background-color: rgb(189, 189, 189); width: {{percentage}}%; margin: 0px; height: 100%;">
+            
+            </div>
+        </div>
+    </div>
+    <center><span style="color: rgb(189, 189, 189); margin-top: 20px;" id="tickets-sold">{{tickets_sold}}/{{capacity}}</span></center>
+    <div id="zab">
+    {% for ticket in event.tickets.all %}
+    <div class="ticket">
+        <b class="ticket-title">{{ticket.type}}</b>
+        <span class="ticket-info">
+            <span class="ticket-label">price :</span><span class="ticket-value">{{ticket.price}}</span>
+        </span>
+    </div>
+    {% endfor %}
+    </div>
+</div>
+{% if can_rate == True %}
+<div class="event-details-div" style="text-align: center;">
+    <h1 style="margin-bottom: 5px;">ratings</h1>
+    <form method="post">
+        <div id="stars" style="font-size: 2em;">
+            <span class="star"  data-s="1" data-clk="false"  onclick="strclk(this)" onmouseover="strhv(this)" onmouseout="back(this)" >★</span><span class="star" data-s="2" data-clk="false" onclick="strclk(this)" onmouseover="strhv(this)" onmouseout="back(this)">★</span><span class="star" data-s="3" data-clk="false" onclick="strclk(this)" onmouseover="strhv(this)" onmouseout="back(this)">★</span><span class="star" data-s="4" data-clk="false" onclick="strclk(this)" onmouseover="strhv(this)" onmouseout="back(this)">★</span><span class="star" data-s="5" data-clk="false" onclick="strclk(this)" onmouseover="strhv(this)" onmouseout="back(this)">★</span>
+        </div>
+        <input type="hidden" name="stars" id="hr" value="0">
+        <input type="text" name="rate" placeholder="comment">
+        <input type="submit" value="send">
+    </form>
+</div> 
+
+<script>
+    function strclk(e){
+        stars = document.querySelectorAll(".star");
+        const ns = e.dataset.s;
+        for(let i = 0 ; i < ns ; i++){
+            stars[i].style.color = "orange";
+            stars[i].dataset.clk = "true";
+            document.getElementById("hr").value = ns ;
+        }
+        for(let i = ns ; i < stars.length ; i++){
+            stars[i].style.color = "gray";
+            stars[i].dataset.clk = "false";
+        }
+    }
+    function strhv(e){
+        stars = document.querySelectorAll(".star");
+        const ns = e.dataset.s;
+        for(let i = 0 ; i < ns ; i++){
+            stars[i].style.color = "orange";
+        }
+        for(let i = ns ; i < stars.length ; i++){
+            stars[i].style.color = "gray";
+        }
+    }
+    function back(){
+        stars = document.querySelectorAll(".star");
+        for(let i = 0 ; i < stars.length ; i++){
+            if(stars[i].dataset.clk != "true"){
+                stars[i].style.color = "gray";
+            }
+            if(stars[i].dataset.clk == "true"){
+                stars[i].style.color = "orange";
+            }
+        }
+
+    }
+</script>
+{% endif %}
+
+{% if rated == True %}
+<div class="event-details-div" style="text-align: center;">
+   <h1>your review :</h1> <h2 id="urs" style="color: orange;"></h2>
+   <p style="font-size: 1.3em;">{{review.cmnt}}</p>
+</div>
+
+<script>
+    let stars = "★".repeat({{review.score}});
+    document.getElementById("urs").innerHTML = stars;
+</script>
+{% endif %}
+{% endblock %}

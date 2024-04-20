@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block title %} create event {% endblock %}
+{% block body %} 
+<div class="create-event-div">
+    <center><h1>Create Event</h1></center>
+    <form method="post" class="create-event-form">
+        <input type="text" name="title" placeholder="title">
+        <textarea name="description" placeholder="description"></textarea>
+        <input type="text" name="address" placeholder="location">
+        <input type="datetime-local" name="start-at" placeholder="when">
+        <input type="text" name="type" placeholder="event type">
+        <input type="submit" value="create" name="s">
+    </form>
+</div>
+    <center><h3 style="color: red;">{{msg}}</h3></center>
+
+{% endblock %}
