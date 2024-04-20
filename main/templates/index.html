@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+{% block title %}
+home
+{% endblock %}
+{% block body %}
+<center>
+<form action="/result" method="get">
+<div id="search-div"><input type="text" name="s" id="search-bar"><input type="submit" value="🔍" id="search-emoji"></div>
+</form>
+</center>
+<h1 style="margin-left: 5%;">Events</h1>
+<div id="events-container">  
+{% for event in  events %}
+    <div class="event">
+        <b class="ticket-title"><a href="/Profile/{{event.user.username}}" style="color: rgb(189, 189, 189);">{{event.user.username}}</a></b>        
+        <span class="ticket-info">
+            <span class="ticket-label">title :</span><span class="ticket-value"><a href="/event/{{event.id}}" style="color: rgb(189, 189, 189);">{{event.title}}</a></span>
+        </span>
+        <span class="ticket-info">
+        <span class="ticket-label">address :</span><span class="ticket-value">{{event.address}}</span>
+        </span>
+        <span class="ticket-info">
+            <span class="ticket-label">date :</span><span class="ticket-value">{{event.start_at}}</span>
+        </span>     
+    </div>
+{% endfor %}
+</div>
+{% endblock %}

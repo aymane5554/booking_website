@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+{% block title %}
+login
+{% endblock %}
+{% block body %}
+<script type="text/babel">
+    function Login_form(){
+    return (
+        <div className="register-div">
+            <center><h1>Login</h1></center>
+            <form className="register-form" method="post">
+            <input type="text" placeholder="username" name="username"/>
+            <input type="password" placeholder="password" name="password"/>
+            <input type="submit" value={"login"} name="s"/>
+            </form>
+        </div>
+        )
+    }
+    ReactDOM.render(<Login_form/>,document.querySelector("#app"));
+    </script>
+{% endblock %}

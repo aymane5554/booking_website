@@ -1,0 +1,41 @@
+{% extends 'layout.html' %}
+{% block title %}
+profile
+{% endblock %}
+{% block body %}
+<h1 id="profile-header">{{user.username}}</h1>
+<div id="profile-container">
+    <div id="user-event-div">
+    <h2 style="display: inline-block;">your events {% if request.user.username == user.username %}<a href="/new_event/" style="text-decoration: none;">➕</a>{% endif %}</h2>
+    {% for e in events %}
+        <li>
+            <b class="ticket-title">
+                <a href="/event/{{e.id}}" style="color: rgb(189, 189, 189);">
+                    {{e.title}}
+                </a>
+            </b>
+        </li>
+    {% endfor %}
+    </div>
+    <div id="user-ticket-div">
+        <h2>your tickets</h2>
+        {% for t in bookings %}
+            <div class="ticket">
+                <b class="ticket-title"><a href="/event/{{t.ticket.event.id}}" style="text-decoration: none; color: rgb(189, 189, 189);">{{t.ticket.event.title}} #{{t.id}}</a></b>
+                <span class="ticket-info">
+                    <span class="ticket-label">type :</span><span class="ticket-value">{{t.ticket.type}}</span>
+                </span>
+                <span class="ticket-info">
+                    <span class="ticket-label">price :</span><span class="ticket-value">{{t.ticket.price}}</span>
+                </span>
+                <span class="ticket-info">
+                    <span class="ticket-label">time :</span><span class="ticket-value">{{t.ticket.event.start_at}}</span> 
+                </span> 
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<script>
+    document.querySelector("#user-event-div").style.width = document.querySelector("#user-ticket-div").style.width
+</script>
+{% endblock %}
