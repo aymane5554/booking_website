@@ -76,12 +76,12 @@ WSGI_APPLICATION = 'final_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'bobakhqrrcmsvlcizzvo',
-        'USER': 'uqhqnvkg4s61ackpatp5',
-        'PASSWORD': 'UTBcVSaVdcnmeyNOrTqmREOEC3eLBS',
-        'HOST': 'bobakhqrrcmsvlcizzvo-postgresql.services.clever-cloud.com',
-        'PORT': '50013',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('POSTGRESQL_ADDON_DB', ''),
+        'USER': os.environ.get('POSTGRESQL_ADDON_USER', ''),
+        'PASSWORD': os.environ.get('POSTGRESQL_ADDON_PASSWORD', ''),
+        'HOST': os.environ.get('POSTGRESQL_ADDON_HOST', ''),
+        'PORT': os.environ.get('POSTGRESQL_ADDON_PORT', ''),
     }
 }
 
