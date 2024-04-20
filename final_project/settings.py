@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-%!5+a17j8%h)a&ao@vu&f2rleund%6wm@4k73jk3hv&@cms8z(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','192.168.11.100']
+ALLOWED_HOSTS = ['127.0.0.1','eventing.cleverapps.io']
 
 
 # Application definition
