@@ -23,9 +23,8 @@ def profile(request,username):
     user = User.objects.get(username=username)
     es = user.events.all()
     rsums = 0
-    rs = 0
+    rs = len(es)
     for e in es :
-        rs += len(e.event_rankings.all())
         for r in e.event_rankings.all():
             rsums += r.score
     rate = 0
@@ -34,6 +33,11 @@ def profile(request,username):
     else: 
         rate = rsums/rs
     return render(request,"profile.html",{"rate":rate,"user" : user, "bookings" : user.user_bookings.all().order_by("-id"),"events" :user.events.all().order_by("-created_at")})
+
+def ticket_valid(type,price,number):
+    if len(type.strip()) > 0 and int(price) >0 and int(number) > 0 :
+        return True
+    return False
 
 @csrf_exempt
 def event_page(request,id):
@@ -80,9 +84,17 @@ def event_page(request,id):
                 rated = True
                 can_rate = False
                 return render(request,"fevent.html",{"review":Rank.objects.get(user = request.user,event=event),"rated":rated,"event":event,"tickets_sold" : sold , "percentage" : percentage,"capacity" :capacity,"can_rate":can_rate,"event_rate":event_rate,"number_of_rates":number_of_rates})
-            
-
             return render(request,"fevent.html",{"rated":rated,"event":event,"tickets_sold" : sold , "percentage" : percentage,"capacity" :capacity,"can_rate":can_rate,"event_rate":event_rate,"number_of_rates":number_of_rates})
+    if request.method == "POST" :
+        title = request.POST["type"]
+        price =request.POST["price"]
+        number = request.POST["tickets"]
+        if request.user != event.user : 
+            return render(request,"event.html",{"msg":"false informations","event":event ,"tickets_available":capacity-sold,"tickets_sold" : sold , "percentage" : percentage,"capacity" :capacity})
+        if ticket_valid(type=title,price=price,number=number):
+            Ticket.objects.create(type=title,price=price,event=event,number=number)
+            return redirect(f"/event/{id}")
+        return render(request,"event.html",{"msg":"false informations","event":event ,"tickets_available":capacity-sold,"tickets_sold" : sold , "percentage" : percentage,"capacity" :capacity})
     return render(request,"event.html",{"event":event ,"tickets_available":capacity-sold,"tickets_sold" : sold , "percentage" : percentage,"capacity" :capacity})
 
 def is_event_valid(title,description,address,type):
@@ -102,7 +114,7 @@ def create_event_view(request):
         user = request.user
         if is_event_valid(title=title,description=desc,address=location,type=tpe):
             Event.objects.create(title=title,description=desc,address=location,start_at=datetime,type=tpe,user=user) 
-            id = Event.objects.get(title=title).id
+            id = Event.objects.get(title=title,description=desc,address=location,start_at=datetime,type=tpe,user=user) .id
             return redirect(f"/event/{id}")
         return render(request,"create_event.html",{"msg" : "Something is wrong !!!"})
     return render(request,"create_event.html")
@@ -164,28 +176,11 @@ def register(request):
     else:
         return render(request, "register.html")
     
-#API endpoints
-@login_required(login_url="/login")
-@csrf_exempt
-def create_ticket(request):
-    if request.method == "POST" :
-        data = json.loads(request.body)
-        title = data.get("title")
-        price =data.get("price")
-        number = data.get("number")
-        event = data.get("event")
-        event = Event.objects.get(pk=int(event))
-        if request.user != event.user : 
-            return JsonResponse({"error" : "hacker😳"})
-        Ticket.objects.create(type=title,price=price,event=event,number=number)
-        return JsonResponse({"msg":"ticket created"},status=200)
-    return JsonResponse({"error" : "post method required"})
-
 def password():
     chars = ""
     chars += string.ascii_letters
     chars += string.digits
-    chars+= string.punctuation
+    chars+= string.punctuation.replace(',', '')
     p = ""
     for i in range(20):
         p+=random.choice(chars)
@@ -194,14 +189,26 @@ def password():
 @login_required(login_url="/login")
 @csrf_exempt
 def booking(request):
+    sold = 0
+    capacity = 0
+    percentage = 0
     if request.method == "POST":
         data = json.loads(request.body)
         ticket = Ticket.objects.get(pk=int(data.get("id")))
-        sold = len(ticket.ticket_bookings.all())
-        if ticket.number-sold <= 0 :
+        tsold = len(ticket.ticket_bookings.all())
+        if ticket.number-tsold <= 0 :
              return JsonResponse({"msg" : "tickets already sold out"})
         Bookings.objects.create(ticket=ticket,user=request.user,password=password())
-        return JsonResponse({"msg" : "ticket bought go to your profile to print it"})
+        event = ticket.event
+        for ticket in event.tickets.all():
+            capacity += ticket.number
+        for ticket in event.tickets.all():
+            sold += len(ticket.ticket_bookings.all())
+        if sold != 0 :
+            percentage = (sold/capacity)*100
+        else : 
+            percentage = 0
+        return JsonResponse({"msg" : "ticket bought. go to your profile to see it","percentage":percentage,"capacity":capacity,"sold":sold})
     return JsonResponse({"error" : "post method required"})
 
 @login_required(login_url="/login")

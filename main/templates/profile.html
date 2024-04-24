@@ -18,6 +18,7 @@ profile
         </li>
     {% endfor %}
     </div>
+    {% if request.user.username == user.username %}
     <div id="user-ticket-div">
         <h2>Tickets</h2>
         {% for t in bookings %}
@@ -40,6 +41,7 @@ profile
             </div>
         {% endfor %}
     </div>
+    {% endif %}
 </div>
 <script>
     document.querySelector("#user-event-div").style.width = document.querySelector("#user-ticket-div").style.width

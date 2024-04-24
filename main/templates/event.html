@@ -23,7 +23,7 @@
             </div>
         </div>
     </div>
-    <center><span style="color: rgb(189, 189, 189); margin-top: 20px;" id="tickets-sold">{{tickets_sold}}/{{capacity}}</span></center>
+    <center><span style="color: rgb(189, 189, 189); margin-top: 20px;" id="ticketssold">{{tickets_sold}}/{{capacity}}</span></center>
     <div id="zab">
     {% for ticket in event.tickets.all %}
     <div class="ticket">
@@ -45,13 +45,17 @@
             body: JSON.stringify({
                 id : ticket_id 
                 })
-            })
-            .then(response => response.json())
-            .then(data =>{
-                e.innerHTML = `bought`
-                setTimeout(location.reload(), 5000);
+            }).then(response => response.json())
+            .then(data => {
+                var b =document.createElement("b");
+                e.parentElement.appendChild(document.createElement("br"));
+                b.innerHTML = `${data.msg}`;
+                e.parentElement.appendChild(b);
+                if (data.msg=="ticket bought. go to your profile to see it"){
+                    document.getElementById("ticketssold").innerHTML=`${data.sold}/${data.capacity}` ;
+                    document.getElementById("progress").style.width= `${data.percentage}%`;
+                }
             })            
-            
     }
     function Add_Ticket(){
         var [clicked,set_clicked]  =  React.useState(false);
@@ -82,27 +86,16 @@
             function changenumber(event){
                 setnumber(event.target.value);
             }
-            const submitticket = ()=>{
-            fetch('/api/create_ticket/', {
-            method: 'POST',
-            body: JSON.stringify({
-                title: title,
-                price: price,
-                number: number,
-                event : {{event.id}}
-                })
-            })
-            set_clicked(false);
-            location.reload();
-        }
             return(
             <div id="add-ticket-from">
                 <button className="x-btn" onClick={cancelticket}>✖</button>
                 <center><h2>Add Ticket</h2></center>
+                <form method="post">
                 <input type="text" id="titlein" name="type" placeholder="title" value={title} onChange={changeTitle} />
                 <input type="number" name="price" placeholder="price" value={price} onChange={changeprice}/>
                 <input type="number" name="tickets" placeholder="number" value={number}  onChange={changenumber}/>
-                <button id="add-ticket-btn1" onClick={submitticket}>Add Ticket</button>
+                <input type="submit" id="add-ticket-btn1" name="s" value="Add Ticket" />
+                </form>
             </div>
             )
         }

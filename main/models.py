@@ -13,6 +13,7 @@ class Event(models.Model):
     start_at = models.DateTimeField()
     type = models.CharField(max_length=32)
     user = models.ForeignKey(User,on_delete = models.CASCADE,related_name="events")
+    selling = models.BooleanField(default=False)
 
     def serializer(self):
         return {
