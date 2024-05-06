@@ -1,3 +1,5 @@
+youtube : https://youtu.be/G-uDlGgryGY?si=shRO1tN3VzLp0x7w
+
 # Views.py 
 1. **`index(request)`**:
    - Renders the `index.html` template and passes all events (`Event.objects.all().order_by("-created_at")`) to the template.
