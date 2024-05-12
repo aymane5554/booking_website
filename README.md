@@ -1,3 +1,5 @@
+a ticketing website where users can create , rate and search events and buy and create tickets.
+
 youtube : https://youtu.be/G-uDlGgryGY?si=shRO1tN3VzLp0x7w
 
 # Views.py 
